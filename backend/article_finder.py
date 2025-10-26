@@ -1,8 +1,12 @@
 import argparse
 import requests
 import re
+import os
 from datetime import datetime
 from dataclasses import dataclass
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @dataclass
 class Article:
@@ -38,8 +42,8 @@ def find_articles(statement, num_results=20, before_date=None):
 
     for page in range(total_pages):
         params = {
-            'key': "AIzaSyCcLt-9ysm5wwQvNAR_eFgpJs7Lrfb5xyo",
-            'cx': "f7daf3352d60240f2",
+            'key': os.getenv("GOOGLE_API_KEY"),
+            'cx': os.getenv("GOOGLE_SEARCH_ENGINE_ID"),
             'q': statement,
             'num': results_per_page,
             'start': page * results_per_page + 1  # Google starts at 1
