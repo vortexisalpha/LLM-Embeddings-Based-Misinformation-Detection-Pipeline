@@ -52,7 +52,7 @@ def analyse_video(youtube_url: str):
     low_truth = [statements[i] for i in range(len(truth_scores)) if truth_scores[i] < 0.4]
     low_truth_truth_scores = [score for score in truth_scores if score < 0.4]
     
-    # Handle case where all statements are true (no misinformation found)
+    #handle case where all statements are true (no misinformation found)
     if not low_truth:
         return {
             "nodes": [],

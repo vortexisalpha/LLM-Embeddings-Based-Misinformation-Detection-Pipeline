@@ -21,7 +21,7 @@ interface FlowComponentProps {
     nodes: number[];
     names: string[];
     severities: number[];
-    truthieness: number[];
+    truthiness: number[];
     edges: number[][];
   };
   title: {
@@ -50,7 +50,7 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
   }
   
   const nodes = jsonData.nodes.map((nodeId, index) => {
-    const truthiness = jsonData.truthieness?.[index] || 0;
+    const truthiness = jsonData.truthiness?.[index] || 0;
     const severity = jsonData.severities?.[index] || 1;
     const name = jsonData.names?.[index] || 'Unknown';
     

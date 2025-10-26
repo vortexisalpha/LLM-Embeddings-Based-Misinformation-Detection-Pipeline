@@ -27,35 +27,48 @@ We should request the transcript with timestamps, and maintain them in the
 final statements.
 """
 def video(video_id):
-    # Fetch transcript using the new API
-    api = YouTubeTranscriptApi()
-    transcript = api.fetch(video_id)
-    full_transcript = " ".join([entry.text for entry in transcript])
-    # Process transcript: separate sentences & keep timestamps
+    # Fetch transcript using the NEW API (v1.2.3+)
+    print(f"Fetching transcript for video: {video_id}")
+    
+    try:
+        # create YouTubeTranscriptApi instance
+        ytt_api = YouTubeTranscriptApi()
+        fetched_transcript = ytt_api.fetch(video_id, languages=['en', 'en-US', 'en-GB'])
+    
+        return format_transcript_data(fetched_transcript)
+        
+    except Exception as e:
+        error_str = str(e)
+        print(f"full Error details: {error_str}")
+        print(f"error type: {type(e).__name__}")
+        
 
+def format_transcript_data(fetched_transcript):
+    """Format FetchedTranscript object into (time, text) tuples"""
     data = []
-
-    for entry in transcript:
-        text = entry.text
-        timestamp = entry.start
-        time = str(int(timestamp // 60)) + ":" + str(round(timestamp % 60))
+    
+    # NEW API: iterate over snippets
+    for snippet in fetched_transcript.snippets:
+        text = snippet.text
+        timestamp = snippet.start
+        minutes = int(timestamp // 60)
+        seconds = int(round(timestamp % 60))
+        time = f"{minutes}:{seconds}"
         data.append((time, text))
-    # print(data)
+    
     return data
 
 def extract_statements(youtube_video_url: str) -> List[Statement]:
-    video_id = youtube_video_url.split("v=")[1]
-    ls = video(video_id)
-    # print(ls)
-    # print("-------")
+    # Extract video ID, handling URLs with additional parameters like &t=4s
+    video_id = youtube_video_url.split("v=")[1].split("&")[0]
+
+    ls = video(video_id) #get the transcript data
+   
     str = ""
     for i in range(len(ls)):
         str = str + ls[i][1] + " "
-    # print(str)
-    # print("-------")
-    # Use LLM to extract factual statements
 
-    # Initialize LLM
+
     client = OpenAI()
     
     response = client.chat.completions.create(
@@ -125,22 +138,21 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
     statements_clarified = [statement["clarified"] for statement in result["statements"]]
 
     sentences = statements_text
-
     seen = set()
     unique_statements = []
     statements_with_positions = []
-    for s in sentences:
+    for i, s in enumerate(sentences):
         if s not in seen:
             seen.add(s)
             unique_statements.append(s)
             pos = str.find(s)
-            statements_with_positions.append((s, pos))
+            # Store (original_text, pos, clarified_text) together
+            statements_with_positions.append((s, pos, statements_clarified[i]))
 
     statements_with_positions.sort(key=lambda x: x[1])
-    
-    # Cap at 10 statements maximum
+    #cap at 15 statements for testing purposes
     statements_with_positions = statements_with_positions[:15]
-    statements_clarified = statements_clarified[:15]
+    statements_clarified = [item[2] for item in statements_with_positions]
     
     acc = ""
     statements_with_timestamps = []

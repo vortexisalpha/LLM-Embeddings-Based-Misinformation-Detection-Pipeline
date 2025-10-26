@@ -122,7 +122,7 @@ function AnimatedRoutes() {
     nodes: [],
     names: [],
     severities: [],
-    truthieness: [],
+    truthiness: [],
     edges: []
   });
 

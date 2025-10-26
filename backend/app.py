@@ -13,9 +13,14 @@ CORS(app)
 app_data: AppData = None
 
 # Configure cache
-#stores results of functions in memory for 5 minutes
+# ma
+cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
+os.makedirs(cache_dir, exist_ok=True)
+
+# Stores results of functions in filesystem for 5 minutes
 cache = Cache(app, config={
-    'CACHE_TYPE': 'simple',  
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': cache_dir,
     'CACHE_DEFAULT_TIMEOUT': 300  # 5 minutes
 })
 
