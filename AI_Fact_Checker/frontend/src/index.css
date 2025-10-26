@@ -1,0 +1,408 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  font-family: 'Roboto', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #1a1a1a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --bg-dark: #1a1a1a;
+  --bg-medium: #404040;
+  --accent: #818cf8;
+  --text-primary: #f8fafc;
+  --gradient: linear-gradient(145deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Glowing border effect */
+@keyframes glow-pulse {
+  0% { 
+    box-shadow: 0 0 15px rgba(224, 66, 17, 0.6);
+    opacity: 0.6;
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(224, 66, 17, 0.9);
+    opacity: 1;
+  }
+  100% { 
+    box-shadow: 0 0 15px rgba(224, 66, 17, 0.6);
+    opacity: 0.6;
+  }
+}
+
+.node-glow-container {
+  position: relative;
+  padding: 3px;
+}
+
+.node-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 15%;
+  animation: glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.node-glow-container:hover .node-glow {
+  animation: glow-pulse 1s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+.node-content {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid;
+  border-image: var(--gradient);
+  border-image-slice: 1;
+  border-radius: 16px;
+  padding: 20px;
+  color: var(--text-primary);
+  min-width: 150px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  z-index: 1;
+  font-family: 'Roboto';
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  white-space: normal;
+  word-wrap: break-word;
+  font-size: calc(12px + 0.5vw); /* Base responsive font size */
+}
+
+.node-content::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: var(--gradient);
+  opacity: 0.1;
+  z-index: -1;
+  animation: rotate 6s linear infinite;
+}
+
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
+}
+
+.node-label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.4;
+  padding: 8px;
+  font-size: clamp(12px, 1.25vw + 8px, 20px);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@supports (font-size: clamp(12px, 1.5vw, 20px)) {
+  .node-content {
+    font-size: clamp(12px, 1.5vw, 20px); /* Min 12px, preferred 1.5% viewport width, max 20px */
+  }
+}
+
+/* Modern header styling */
+#header-component {
+  /* Full-width navbar positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 60px;
+  transform: none !important;
+  z-index: 1000;
+  /* Light gray with increased transparency */
+  background: rgba(85, 73, 73, 0.15); /* Light gray base */
+  
+  /* Enhanced blur effect */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  /* Light theme borders */
+  border-bottom: 1px solid rgba(39, 36, 36, 0.2);
+  box-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+  
+  /* Light text for contrast */
+  color: rgba(255, 255, 255, 0.95);
+  
+  /* Text alignment */
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  border-radius: 0;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Optional: Add frost effect */
+#header-component::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+/* Remove hover transformations */
+
+/* Optional: Add glow animation */
+
+
+#header-component {
+  animation: header-glow 3s ease-in-out infinite;
+}
+
+/* Modern edge styling */
+.react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-opacity: 0.7;
+  animation: edgeFlow 1.5s linear infinite;
+}
+
+@keyframes edgeFlow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 20; }
+}
+
+/* Turbo Node Styles */
+.react-flow {
+  --bg-color: rgb(17, 17, 17);
+  --text-color: rgb(243, 244, 246);
+  --node-border-radius: 10px;
+  --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3),
+    -10px 0 15px rgba(233, 42, 103, 0.3);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.react-flow__node-turbo {
+  border-radius: var(--node-border-radius);
+  display: flex;
+  min-height: 70px;
+  height: auto;
+  min-width: 180px;
+  max-width: 450px;
+  width: auto;
+  font-family: 'Fira Mono', 'Roboto', Monospace;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  box-shadow: var(--node-box-shadow);
+}
+
+.react-flow__node-turbo .wrapper {
+  overflow: hidden;
+  display: flex;
+  padding: 2px;
+  position: relative;
+  border-radius: var(--node-border-radius);
+  flex-grow: 1;
+}
+
+.gradient:before {
+  content: '';
+  position: absolute;
+  padding-bottom: calc(100% * 1.41421356237);
+  width: calc(100% * 1.41421356237);
+  background: conic-gradient(
+    from -160deg at 50% 50%,
+    #e92a67 0deg,
+    #a853ba 120deg,
+    #2a8af6 240deg,
+    #e92a67 360deg
+  );
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100%;
+}
+
+.react-flow__node-turbo.selected .wrapper.gradient:before {
+  content: '';
+  background: conic-gradient(
+    from -160deg at 50% 50%,
+    #e92a67 0deg,
+    #a853ba 120deg,
+    #2a8af6 240deg,
+    rgba(42, 138, 246, 0) 360deg
+  );
+  animation: spinner 4s linear infinite;
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -1;
+}
+
+@keyframes spinner {
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+.react-flow__node-turbo .inner {
+  background: var(--bg-color);
+  padding: 16px 20px;
+  border-radius: var(--node-border-radius);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  position: relative;
+}
+
+.react-flow__node-turbo .body {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.react-flow__node-turbo .title {
+  font-size: 14px;
+  margin-bottom: 2px;
+  line-height: 1.3;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.react-flow__node-turbo .subtitle {
+  font-size: 11px;
+  color: #999;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
+}
+
+.react-flow__node-turbo .cloud {
+  border-radius: 100%;
+  width: 32px;
+  height: 32px;
+  left: -8px;
+  position: absolute;
+  top: -8px;
+  display: flex;
+  transform-origin: center center;
+  padding: 2px;
+  overflow: hidden;
+  box-shadow: var(--node-box-shadow);
+  z-index: 2;
+}
+
+.react-flow__node-turbo .cloud div {
+  background-color: var(--bg-color);
+  flex-grow: 1;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  color: #a855f7;
+}
+
+.react-flow__node-turbo .cloud div svg {
+  width: 14px;
+  height: 14px;
+}
+
+.react-flow__handle {
+  opacity: 0;
+}
+
+.react-flow__handle.source {
+  right: -10px;
+}
+
+.react-flow__handle.target {
+  left: -10px;
+}
+
+.react-flow__node:focus {
+  outline: none;
+}
+
+.react-flow__edge .react-flow__edge-path {
+  stroke: url(#edge-gradient);
+  stroke-width: 2;
+  stroke-opacity: 0.75;
+}
+
+.react-flow__controls button {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid #95679e;
+  border-bottom: none;
+}
+
+.react-flow__controls button:hover {
+  background-color: rgb(37, 37, 37);
+}
+
+.react-flow__controls button:first-child {
+  border-radius: 5px 5px 0 0;
+}
+
+.react-flow__controls button:last-child {
+  border-bottom: 1px solid #95679e;
+  border-radius: 0 0 5px 5px;
+}
+
+.react-flow__controls button path {
+  fill: var(--text-color);
+}
+
+.react-flow__attribution {
+  background: rgba(200, 200, 200, 0.2);
+}
+
+.react-flow__attribution a {
+  color: #95679e;
+}
+ 

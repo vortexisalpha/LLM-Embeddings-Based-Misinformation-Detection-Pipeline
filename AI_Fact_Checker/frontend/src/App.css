@@ -1,0 +1,81 @@
+/* Landing Page Styles */
+.landing-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #1a1a1a;
+  padding: 20px;
+}
+
+.content-wrapper {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  background: linear-gradient(90deg, #ec4899 0%, #a855f7 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #9ca3af;
+  margin: 0 0 3rem 0;
+  line-height: 1.6;
+}
+
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.url-input {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  background-color: #2d2d2d;
+  color: #d1d5db;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.url-input::placeholder {
+  color: #6b7280;
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.analyze-button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #4b5563;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  letter-spacing: 0.05em;
+}
+
+.analyze-button:hover {
+  background-color: #6b7280;
+}
+
+.analyze-button:active {
+  background-color: #374151;
+}
