@@ -7,35 +7,6 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 
 
-
-
-const exampleJson = {
-  nodes: [1,2,3,4,5,6,7,8,9],
-  node_names: ["Mexicans", "Black People", "White People", "Asians", "Indians", "Middle Easterners", "Latin Americans", "African Americans", "Native Americans"],
-  severity: [1,2,3,4,5,1,2,3,1],
-  edges: []
-};
-
-
-const exampleJson2 = {
-  nodes: [1,2,3,4,5,6],
-  node_names: ["random quote bla blaasdasd asdasdasdasdasdasdasda sdasdasdasdasdasdasdasdasdasd", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla"],
-  severity: [1,2,3,4,5,1],
-  node_name: [""],
-  edges: [[1,2], [1,3], [1,4], [1,5], [1,6]]
-};
-
-const exampleJson3 = {
-  nodes: [1,2,3,4,5],
-  node_names: ["link", "link", "link", "link", "link"],
-  severity: [1,2,3,4,5],
-  edges: [[1,2], [2,3], [3,4], [4,5]],
-  node_name: [""],
-  links: ["link", "link", "link", "link", "link"]
-};
-
-const exampleTitle = {header: "Youtube Video: Trump Inauguration"}
-
 interface NestedNodePageProps {
   data: {
     nodes: number[];
