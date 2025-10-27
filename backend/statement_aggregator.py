@@ -9,10 +9,10 @@ from sklearn.cluster import KMeans
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-import torch  # Using PyTorch for tensor operations
 import matplotlib
 matplotlib.use('Agg')  # Non-GUI backend
 import matplotlib.pyplot as plt
+from openai import OpenAI
 
 @dataclass
 class Misinformation:
@@ -29,44 +29,23 @@ them with each other. We can then cluster them using KMeans for example, and pro
 The final truthiness and severity scores should be aggregated by doing batch averages over the clusters.
 Summaries can be generated using an LLM.
 """
-def aggregate_statements(statements: List[Statement],
-                         truth_scores: List[float],
-                         severity_scores: List[float]) -> List[Misinformation]:
-    # Handle edge case: no statements
-    if not statements:
-        return []
-    
-    # Handle edge case: single statement
-    if len(statements) == 1:
-        return [Misinformation(
-            statements=[statements[0]],
-            summary=statements[0].text[:50] + "..." if len(statements[0].text) > 50 else statements[0].text,
-            severity=severity_scores[0],
-            truthiness=truth_scores[0]
-        )]
-    
-    # Import your OpenAI client (assuming it is correctly set up)
-    from openai import OpenAI
+def aggregate_statements(statements: List[Statement], truth_scores: List[float], severity_scores: List[float]) -> List[Misinformation]:
     client = OpenAI()
 
-    # Update get_embedding to return a torch tensor instead of a list
+    # Get embeddings as numpy arrays
     def get_embedding(text, model="text-embedding-3-small"):
         text = text.replace("\n", " ")
         response = client.embeddings.create(input=[text], model=model)
-        # Convert the embedding list to a torch tensor
-        embedding = torch.tensor(response.data[0].embedding, dtype=torch.float)
-        return embedding
+        # Return as numpy array
+        return np.array(response.data[0].embedding, dtype=np.float32)
 
     #extract texts from statements
     statements_text = [statement.text for statement in statements]
 
-    #get embeddings as a list of tensors and then stack them into one tensor
+    #get embeddings as a list of arrays and stack them into a 2D array
     embeddings_list = [get_embedding(statement.text, model='text-embedding-3-small') for statement in statements]
     #shape: (n_statements, embedding_dim)
-    embeddings_tensor = torch.stack(embeddings_list)
-
-    #convert embeddings tensor to a NumPy array for scikit-learn usage
-    embeddings_np = embeddings_tensor.detach().cpu().numpy()
+    embeddings_np = np.array(embeddings_list)
 
     #determine number of clusters (using elbow method)
     max_clusters = min(len(statements), 8)
@@ -88,9 +67,7 @@ def aggregate_statements(statements: List[Statement],
 
     #perform final clustering
     kmeans = KMeans(n_clusters=optimal_clusters, random_state=42)
-    cluster_labels_np = kmeans.fit_predict(embeddings_np)
-    #convert cluster labels to a tensor for subsequent operations
-    cluster_labels = torch.tensor(cluster_labels_np)
+    cluster_labels = kmeans.fit_predict(embeddings_np)
 
     #project embeddings to 2D using t-SNE for visualization
     perplexity = min(max(1, len(statements) - 1), 30)  # perplexity must be less than n_samples
@@ -100,7 +77,7 @@ def aggregate_statements(statements: List[Statement],
     #plot the clusters
     plt.figure(figsize=(10, 8))
     scatter = plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1],
-                          c=cluster_labels_np, cmap='viridis',
+                          c=cluster_labels, cmap='viridis',
                           alpha=0.6)
     plt.title('Statement Clusters Visualization')
     plt.colorbar(scatter, label='Cluster')
@@ -112,9 +89,9 @@ def aggregate_statements(statements: List[Statement],
     plt.savefig('statement_clusters.png')
     plt.show()
 
-    #convert truth_scores and severity_scores to tensors for tensor-based averaging
-    truth_scores_tensor = torch.tensor(truth_scores, dtype=torch.float)
-    severity_scores_tensor = torch.tensor(severity_scores, dtype=torch.float)
+    #convert truth_scores and severity_scores to numpy arrays
+    truth_scores_array = np.array(truth_scores, dtype=np.float32)
+    severity_scores_array = np.array(severity_scores, dtype=np.float32)
 
     #aggregate results by cluster
     misinformation_list = []
@@ -122,10 +99,10 @@ def aggregate_statements(statements: List[Statement],
         #create a boolean mask for the current cluster
         cluster_mask = (cluster_labels == cluster_id)
         #filter statements based on cluster membership
-        cluster_statements = [s for s, m in zip(statements, cluster_mask.tolist()) if m]
-        #filter the truth and severity scores and compute the averages using tensors
-        cluster_truths = truth_scores_tensor[cluster_mask]
-        cluster_severities = severity_scores_tensor[cluster_mask]
+        cluster_statements = [s for s, m in zip(statements, cluster_mask) if m]
+        #filter the truth and severity scores and compute the averages using numpy
+        cluster_truths = truth_scores_array[cluster_mask]
+        cluster_severities = severity_scores_array[cluster_mask]
 
         #combine texts from the statements in the current cluster for summarization
         cluster_texts = " ".join([s.text for s in cluster_statements])
@@ -141,8 +118,8 @@ def aggregate_statements(statements: List[Statement],
         misinformation = Misinformation(
             statements=cluster_statements,
             summary=summary,
-            severity=(cluster_severities.mean().item() if cluster_severities.numel() > 0 else 0.0),
-            truthiness=(cluster_truths.mean().item() if cluster_truths.numel() > 0 else 0.0)
+            severity=float(cluster_severities.mean()) if len(cluster_severities) > 0 else 0.0,
+            truthiness=float(cluster_truths.mean()) if len(cluster_truths) > 0 else 0.0
         )
         misinformation_list.append(misinformation)
 
